@@ -1,4 +1,4 @@
-package com.example.loginscreen;
+package com.example.bip;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".Personal_Cabin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="50dp"
+        android:text="Личный кабинет"
+        android:textColor="#2196F3"
+        android:textSize="30dp"
+        android:textStyle="italic" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="127dp"
+        android:layout_marginTop="20dp"
+        app:srcCompat="@drawable/logo"/>
+    <EditText
+        android:id="@+id/edittext_username_l"
+        android:layout_width="190dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:paddingLeft="2dp"
+        android:background="#F0FFFF"
+        android:drawableLeft="@drawable/username"
+        android:hint="@string/username"/>
+    <EditText
+        android:id="@+id/edittext_email_l"
+        android:layout_width="190dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:paddingLeft="2dp"
+        android:background="#F0FFFF"
+        android:drawableLeft="@drawable/mail"
+        android:hint="@string/Email"/>
+    <EditText
+        android:id="@+id/edittext_phone_l"
+        android:layout_width="190dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:paddingLeft="2dp"
+        android:background="#F0FFFF"
+        android:drawableLeft="@drawable/phone"
+        android:inputType="phone"
+        android:hint="@string/phone_number"/>
+
+    <Button
+        android:id="@+id/button_accept_change"
+        android:layout_width="190dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="50dp"
+        android:background="#0042EA"
+        android:text="Save changes"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:id="@+id/button_exit"
+        android:layout_width="190dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="25dp"
+        android:background="#F44336"
+        android:text="Exit"
+        android:textColor="#FBFBFB"
+        app:backgroundTint="#F44336" />
+
+</LinearLayout>

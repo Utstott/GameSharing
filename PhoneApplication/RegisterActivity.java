@@ -1,4 +1,4 @@
-package com.example.loginscreen;
+package com.example.bip;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
         mTextUsername = (EditText)findViewById(R.id.edittext_username);
         mTextEmail = (EditText)findViewById(R.id.edittext_email);
+        mTextPhone= (EditText)findViewById(R.id.edittext_phone);
         mTextPassword = (EditText)findViewById(R.id.edittext_password);
         mTextCnfPassword = (EditText)findViewById(R.id.edittext_cnf_password);
         mButtonRegister = (Button)findViewById(R.id.button_register);
@@ -44,12 +45,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String user = mTextUsername.getText().toString().trim();
                 String email = mTextEmail.getText().toString().trim();
+                String phone = mTextPhone.getText().toString().trim();
                 String pwd = mTextPassword.getText().toString().trim();
                 String cnf_pwd = mTextCnfPassword.getText().toString().trim();
-
-                if(pwd.equals(cnf_pwd))
+                Boolean res = db.checkUser(user,pwd);
+                if(pwd.equals(cnf_pwd) && res!=true)
                 {
-                    long val = db.addUser(user,email,pwd);
+                    long val = db.addUser(user,email,phone,pwd);
                     if(val>0)
                     {
                         Toast.makeText(RegisterActivity.this,"You was registered",Toast.LENGTH_SHORT).show();
@@ -61,10 +63,12 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this,"Registration Error",Toast.LENGTH_SHORT).show();
                     }
                 }
-                else
+                else if (res==true)
                 {
-                    Toast.makeText(RegisterActivity.this,"Password isn't matching",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this,"You have benn already registered",Toast.LENGTH_SHORT).show();
                 }
+                else
+                    Toast.makeText(RegisterActivity.this,"Password isn't matching",Toast.LENGTH_SHORT).show();
             }
         });
     }
