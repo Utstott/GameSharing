@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/MyShop"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     tools:context=".ShopActivity">
@@ -12,7 +13,7 @@
         android:layout_height="41dp"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="43dp"
+        android:layout_marginTop="73dp"
         android:layout_marginEnd="21dp"
         android:layout_marginRight="21dp"
         android:layout_marginBottom="22dp"
@@ -22,11 +23,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <TextView
         android:id="@+id/Price"
         android:layout_width="176dp"
         android:layout_height="46dp"
-        android:layout_marginTop="396dp"
+        android:layout_marginTop="426dp"
         android:background="#673AB7"
         android:foreground="#003700B3"
         android:text="Стоимость аренды"
@@ -42,7 +44,7 @@
         android:id="@+id/age"
         android:layout_width="143dp"
         android:layout_height="43dp"
-        android:layout_marginTop="448dp"
+        android:layout_marginTop="478dp"
         android:background="#673AB7"
         android:foreground="#003700B3"
         android:text="Возраст"
@@ -58,7 +60,7 @@
         android:id="@+id/NumPlayers"
         android:layout_width="143dp"
         android:layout_height="43dp"
-        android:layout_marginTop="344dp"
+        android:layout_marginTop="374dp"
         android:background="#673AB7"
         android:foreground="#003700B3"
         android:text="Кол-во игроков"
@@ -74,7 +76,7 @@
         android:id="@+id/Deposit"
         android:layout_width="175dp"
         android:layout_height="41dp"
-        android:layout_marginTop="452dp"
+        android:layout_marginTop="482dp"
         android:background="#673AB7"
         android:foreground="#003700B3"
         android:text="Залог"
@@ -90,7 +92,7 @@
         android:id="@+id/Time"
         android:layout_width="143dp"
         android:layout_height="43dp"
-        android:layout_marginTop="396dp"
+        android:layout_marginTop="426dp"
         android:background="#673AB7"
         android:foreground="#003700B3"
         android:text="Время"
@@ -109,7 +111,7 @@
         android:layout_height="47dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="130dp"
         android:layout_marginEnd="19dp"
         android:layout_marginRight="19dp"
         android:background="#673AB7"
@@ -130,7 +132,7 @@
         android:layout_height="51dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="500dp"
+        android:layout_marginTop="530dp"
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
         android:background="#673AB7"
@@ -146,18 +148,17 @@
 
     <TextView
         android:id="@+id/GameDescription"
+        android:text="Description"
         android:layout_width="0dp"
         android:layout_height="218dp"
-        android:layout_marginTop="168dp"
+        android:layout_marginTop="198dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:background="@color/white"
         android:foreground="#003700B3"
-        android:text="Описание"
         android:textAllCaps="false"
-        android:textColor="#3F51B5"
-        android:textIsSelectable="false"
-        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.907"
         app:layout_constraintStart_toEndOf="@+id/imageView2"
@@ -167,7 +168,7 @@
         android:id="@+id/ChooseLocation"
         android:layout_width="245dp"
         android:layout_height="31dp"
-        android:layout_marginTop="556dp"
+        android:layout_marginTop="586dp"
         android:background="@color/white"
         android:foreground="#003700B3"
         android:text="Выбрать место"
@@ -184,16 +185,14 @@
         android:id="@+id/imageView2"
         android:layout_width="183dp"
         android:layout_height="167dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="175dp"
+        android:layout_marginEnd="220dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="15dp"
         app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toStartOf="@+id/GameDescription"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TakeGameButton"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/common_google_signin_btn_icon_light" />
 
     <Button
         android:id="@+id/button"
@@ -201,7 +200,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="306dp"
         android:layout_marginLeft="306dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="42dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="1dp"
@@ -252,22 +251,30 @@
         android:layout_marginTop="68dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="59dp"
+        android:layout_marginBottom="39dp"
         android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
 
+    <LinearLayout
+        android:background="#E7E7E7"
+        android:id="@+id/panel"
+        android:orientation="horizontal"
+        android:weightSum="16"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize">
+
     <ImageButton
         android:id="@+id/user7"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_marginStart="370dp"
+        android:layout_width="23dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="330dp"
         android:layout_marginLeft="370dp"
         android:layout_marginEnd="3dp"
         android:layout_marginRight="3dp"
-        android:layout_marginBottom="650dp"
-        android:background="@color/white"
+        android:layout_marginBottom="710dp"
+        android:background="#E7E7E7"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -275,6 +282,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.63"
         app:srcCompat="@drawable/user" />
+
+    <ImageView
+        android:id="@+id/cartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="-330dp"
+        android:layout_marginBottom="0dp"
+        android:src="@drawable/ic_baseline_shop_24" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

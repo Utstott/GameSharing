@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from .serializers import GameCategorySerializer, GameSerializer, CustomerSerializer, CartSerializer
 from .serializers import CartProductSerializer, OrderSerializer, GameBoxSerializer, BagRoomSerializer
 from .serializers import EventSerializer
-from ..models import GameCategory, Game, Customer, Cart, CartProduct, Order, GameBox, BagRoom, Event
+from ..models import GameCategory, Game, Customer, Cart, CartGame, Order, GameBox, BagRoom, Event
 from rest_framework.filters import SearchFilter
 
 
@@ -71,16 +71,16 @@ class CartDetailListAPIView(RetrieveAPIView):
     lookup_field = 'id'
 
 
-class CartProductListAPIView(ListAPIView):
+class CartGameListAPIView(ListAPIView):
     serializer_class = CartProductSerializer
-    queryset = CartProduct.objects.all()
+    queryset = CartGame.objects.all()
     filter_backends = [SearchFilter]
     search_fields = ['final_price']
 
 
-class CartProductDetailListAPIView(RetrieveAPIView):
+class CartGameDetailListAPIView(RetrieveAPIView):
     serializer_class = CartProductSerializer
-    queryset = CartProduct.objects.all()
+    queryset = CartGame.objects.all()
     lookup_field = 'id'
 
 
@@ -121,3 +121,4 @@ class EventDetailListAPIView(RetrieveAPIView):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
     lookup_field = 'id'
+

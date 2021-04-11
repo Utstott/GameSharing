@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 if(res == true)
                 {
                     Toast.makeText(MainActivity.this,"Login Success",Toast.LENGTH_SHORT).show();
-                    Intent shopIntent = new Intent(MainActivity.this,ShopActivity.class);
+                    Intent shopIntent = new Intent(MainActivity.this,OrderCart.class);
                     startActivity(shopIntent);
                 }
                 else

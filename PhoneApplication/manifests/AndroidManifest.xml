@@ -20,8 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BIP">
         <activity
+            android:name=".PopPlaceForCart"
+            android:theme="@style/Theme.BIP.CustomTheme" />
+        <activity android:name=".OrderCart" />
+        <activity android:name=".CartActivity" />
+        <activity
             android:name=".selectPlacePop"
-            android:theme="@style/Theme.BIP.CustomTheme"/>
+            android:theme="@style/Theme.BIP.CustomTheme" />
         <activity android:name=".OtherReturnGame" />
         <activity android:name=".ReturnGame" />
         <activity android:name=".Order" />

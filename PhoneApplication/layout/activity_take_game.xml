@@ -5,16 +5,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:background="#E7E7E7"
+        android:id="@+id/panel"
+        android:orientation="horizontal"
+        android:weightSum="16"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize">
+
+        <ImageView
+            android:id="@+id/cartButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="25dp"
+            android:layout_marginBottom="0dp"
+            android:src="@drawable/ic_baseline_shop_24" />
+    </LinearLayout>
+
     <ImageButton
         android:id="@+id/user7"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_marginStart="370dp"
+        android:layout_width="23dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="330dp"
         android:layout_marginLeft="370dp"
         android:layout_marginEnd="3dp"
         android:layout_marginRight="3dp"
-        android:layout_marginBottom="650dp"
-        android:background="@color/white"
+        android:layout_marginBottom="710dp"
+        android:background="#E7E7E7"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

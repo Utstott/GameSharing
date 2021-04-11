@@ -25,6 +25,7 @@ public class TakeGame extends AppCompatActivity {
     ImageView QR;
     Button Bad;
     Button Good;
+    ImageView catalog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class TakeGame extends AppCompatActivity {
         QR = (ImageView) findViewById(R.id.QR);
         Bad = (Button) findViewById(R.id.NotOk);
         Good = (Button) findViewById(R.id.Ok);
+        catalog = (ImageView) findViewById(R.id.cartButton);
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
@@ -81,6 +83,12 @@ public class TakeGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(TakeGame.this, Pop.class));
+            }
+        });
+        catalog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(TakeGame.this, OrderCart.class));
             }
         });
 

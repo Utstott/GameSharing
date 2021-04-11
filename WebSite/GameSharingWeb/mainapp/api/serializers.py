@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from ..models import GameCategory
-from ..models import Game, GameBox, Cart, CartProduct
+from ..models import Game, GameBox, Cart, CartGame
 from ..models import Customer, Order, BagRoom, Event
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -66,7 +66,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all(), required=False)
-    products = serializers.PrimaryKeyRelatedField(queryset=CartProduct.objects.all(), many=True)
+    products = serializers.PrimaryKeyRelatedField(queryset=CartGame.objects.all(), many=True)
     total_products = serializers.IntegerField(default=0)
     final_price = serializers.DecimalField(max_digits=9, decimal_places=2, default=0)
     in_order = serializers.BooleanField(default=False)
@@ -96,13 +96,13 @@ class CartProductSerializer(serializers.HyperlinkedModelSerializer):
     cart = serializers.PrimaryKeyRelatedField(queryset=Cart.objects.all())
     content_type = serializers.PrimaryKeyRelatedField(queryset=ContentType)
     object_id = serializers.IntegerField(required=True)
-    content_object = CartProductObjectRelatedField(many=False, queryset=CartProduct.objects.all())
+    content_object = CartProductObjectRelatedField(many=False, queryset=CartGame.objects.all())
     #content_object = GenericForeignKey('content_type', 'object_id')
     qty = serializers.IntegerField(default=1)
     final_price = serializers.DecimalField(max_digits=9, decimal_places=2, required=True)
 
     class Meta:
-        model = CartProduct
+        model = CartGame
         fields = [
             'id', 'user', 'cart', 'content_type', 'object_id', 'content_object', 'qty', 'final_price'
         ]
@@ -153,4 +153,3 @@ class EventSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'slug', 'status', 'game_box'
         ]
-

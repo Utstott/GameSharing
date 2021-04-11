@@ -25,6 +25,7 @@ public class ReturnGame extends AppCompatActivity {
     ImageView photo;
     Uri imageUri;
     Button OK;
+    ImageView catalog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class ReturnGame extends AppCompatActivity {
         btnCamera = (Button) findViewById(R.id.Camera2);
         photo = (ImageView) findViewById(R.id.photo2);
         OK = (Button) findViewById(R.id.btn);
+        catalog = (ImageView) findViewById(R.id.cartButton);
         UserLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,6 +50,12 @@ public class ReturnGame extends AppCompatActivity {
             public void onClick(View v) {
                 Intent OkIntent = new Intent(ReturnGame.this, Order.class);
                 startActivity(OkIntent);
+            }
+        });
+        catalog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ReturnGame.this, OrderCart.class));
             }
         });
         btnCamera.setOnClickListener(new View.OnClickListener() {

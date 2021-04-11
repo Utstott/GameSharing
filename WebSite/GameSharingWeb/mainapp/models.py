@@ -30,53 +30,9 @@ class MaxResolutionErrorExeption(Exception):
     pass
 
 
-# class LatestProductsManager:
-#     @staticmethod
-#     def get_products_for_main_page(*args, **kwargs):
-#         with_respect_to = kwargs.get('with_respect_to')
-#         products = []
-#         ct_models = ContentType.objects.filter(model__in=args)
-#         for ct_model in ct_models:
-#             model_product = ct_model.model_class()._base_manager.all().order_by('-id')[:5]
-#             products.extend(model_product)
-#         if with_respect_to:
-#             ct_model = ContentType.objects.filter(model=with_respect_to)
-#             if ct_model.exists():
-#                 if with_respect_to in args:
-#                     return sorted(
-#                         products, key=lambda x: x.__class__._meta.model_name.startswith(with_respect_to), reverse=True
-#                     )
-#         return products
-#
-#
-# class LatestProducts:
-#     object = LatestProductsManager()
-#
-#
-# class CategoryManager(models.Manager):
-#     CATEGORY_NAME_COUNT_NAME = {
-#         'Ноутбуки': 'notebook__count',
-#         'Смартфоны': 'smartphone__count'
-#     }
-#
-#     def get_queryset(self):
-#         return super().get_queryset()
-#
-#     def get_categories_for_left_sidebar(self):
-#         models = get_models_for_count('notebook', 'smartphone')
-#         print(*models)
-#         qs = list(self.get_queryset().annotate(*models))
-#         data = [
-#             dict(name=c.name, url=c.get_absolute_url(), count=getattr(c, self.CATEGORY_NAME_COUNT_NAME[c.name]))
-#             for c in qs
-#         ]
-#         return data
-#
-#
 # class Category(models.Model):
 #     name = models.CharField(max_length=255, verbose_name='Имя категории')
 #     slug = models.SlugField(unique=True)
-#     objects = CategoryManager()
 #
 #     def __str__(self):
 #         return self.name
@@ -131,61 +87,102 @@ class MaxResolutionErrorExeption(Exception):
 #         super().save(*args, **kwargs)
 #
 #
-# class Notebook(Product):
-#     diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
-#     display_type = models.CharField(max_length=255, verbose_name='Тип дисплея')
-#     processor_freq = models.CharField(max_length=255, verbose_name='Частота процессора')
-#     ram = models.CharField(max_length=255, verbose_name='Оперативная память')
-#     video = models.CharField(max_length=255, verbose_name='Видеокарта')
-#     time_without_charge = models.CharField(max_length=255, verbose_name='Время работы аккумулятора')
-#
-#     def __str__(self):
-#         return "{} : {}".format(self.category.name, self.title)
-#
-#     def get_absolute_url(self):
-#         return get_product_url(self, 'product_detail')
-#
-#
-# class Smartphone(Product):
-#     diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
-#     display_type = models.CharField(max_length=255, verbose_name='Тип дисплея')
-#     resolution = models.CharField(max_length=255, verbose_name='Разрешение экрана')
-#     accum_volume = models.CharField(max_length=255, verbose_name='Объем батареи')
-#     ram = models.CharField(max_length=255, verbose_name='Оперативная память')
-#     sd = models.BooleanField(default=True, verbose_name='Наличие SD карты')
-#     sd_volume_max = models.CharField(
-#         max_length=255, null=True, blank=True, verbose_name='Масимальный объем встраиваемой памяти'
-#     )
-#     main_cam_mp = models.CharField(max_length=255, verbose_name='Главная камера')
-#     frontal_cam_mp = models.CharField(max_length=255, verbose_name='Фронтальная камера')
-#
-#     def __str__(self):
-#         return "{} : {}".format(self.category.name, self.title)
-#
-#     def get_absolute_url(self):
-#         return get_product_url(self, 'product_detail')
+
+class GameCategory(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Имя категории')
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('game_category_detail', kwargs={'slug': self.slug})
 
 
-class CartProduct(models.Model):
+class GameBox(models.Model):
+    STATUS_ON_STORAGE = 'on storage'
+    STATUS_AVAILABLE = 'available'
+    STATUS_RENTED = 'rented'
+    STATUS_BOOKED = 'booked'
+    STATUS_ON_REVIEW = 'on review'
+    STATUS_BOUGHT = 'bought'
+    STATUS_SPOILT = 'spoilt'
+    STATUS_DONOR = 'donor'
+
+    STATUS_CHOICES = (
+        (STATUS_ON_STORAGE, 'Игра на складе'),
+        (STATUS_AVAILABLE, 'Игра свободна'),
+        (STATUS_RENTED, 'Игра арендована'),
+        (STATUS_BOOKED, 'Игра забронирована'),
+        (STATUS_ON_REVIEW, 'Игра на проверке'),
+        (STATUS_BOUGHT, 'Игра куплена'),
+        (STATUS_SPOILT, 'Игра испорчена'),
+        (STATUS_DONOR, 'Игра донор')
+    )
+    slug = models.SlugField(unique=True)
+    status = models.CharField(max_length=100, verbose_name='Статус экземпляра', choices=STATUS_CHOICES,
+                              default=STATUS_ON_STORAGE, blank=True)
+    game = models.ForeignKey('Game', verbose_name='Игра', on_delete=models.CASCADE, null=True)
+   # bag_room = models.ForeignKey('BagRoom', verbose_name='Камера хранения', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "Коробка с {}".format(str(self.slug))
+
+
+class Game(models.Model):
+    game_category = models.ManyToManyField(GameCategory, related_name='related_game_category')
+    title = models.CharField(max_length=255, verbose_name='Наименование')
+    slug = models.SlugField(unique=True)
+    image = models.ImageField(verbose_name='Изображение')
+    description = models.TextField(verbose_name='Описание', null=True)
+    price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена/Залог')
+    number_players = models.CharField(max_length=255, verbose_name='Количество игроков')
+    rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Соимость аренды')
+    game_time = models.CharField(max_length=255, verbose_name='Время пратии')
+
+    game_boxes = models.ManyToManyField(GameBox, blank=True, related_name='related_game_box', verbose_name='ID Коробок')
+
+    def __str__(self):
+        return self.title
+
+    def get_model_name(self):
+        return self.__class__.__name__.lower()
+
+    def save(self, *args, **kwargs):
+        image = self.image
+        img = Image.open(image)
+        new_img = img.convert('RGB')
+        resize_new_img = new_img.resize((200, 200), Image.ANTIALIAS)
+        filestream = BytesIO()
+        resize_new_img.save(filestream, 'JPEG', quality=90)
+        filestream.seek(0)
+        name = '{}.{}'.format(*self.image.name.split('.'))
+        self.image = InMemoryUploadedFile(
+            filestream, 'ImageField', name, 'jpeg/image', sys.getsizeof(filestream), None
+        )
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('product_detail', kwargs={'slug': self.slug})
+
+class CartGame(models.Model):
     user = models.ForeignKey('Customer', verbose_name='Покупатель', on_delete=models.CASCADE)
     cart = models.ForeignKey('Cart', verbose_name='Корзина', on_delete=models.CASCADE, related_name='related_products')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    game=models.ForeignKey(Game,verbose_name='Игра', on_delete=models.CASCADE)
     qty = models.PositiveIntegerField(default=1)
     final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена')
 
     def __str__(self):
-        return "Продукт: {} (для корзины)".format(self.content_object.title)
+        return "Продукт: {} (для корзины)".format(self.game.title)
 
     def save(self, *args, **kwargs):
-        self.final_price = self.qty * self.content_object.price
+        self.final_price = self.qty * self.game.price
         super().save(*args, **kwargs)
 
 
 class Cart(models.Model):
     owner = models.ForeignKey('Customer', verbose_name='Владелец', on_delete=models.CASCADE, null=True)
-    products = models.ManyToManyField(CartProduct, blank=True, related_name='related_cart')
+    products = models.ManyToManyField(CartGame, blank=True, related_name='related_cart')
     total_products = models.PositiveIntegerField(default=0)
     final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена', default=0)
     in_order = models.BooleanField(default=False)
@@ -202,7 +199,7 @@ class Customer(models.Model):
     orders = models.ManyToManyField('Order', verbose_name='Заказы покупателя', related_name='related_customer')
 
     def __str__(self):
-        return "Покупатель: {} {}".format(self.user.first_name, self.user.last_name)
+        return "{} Покупатель: {} {}".format(self.id,self.user.first_name, self.user.last_name)
 
 
 class Order(models.Model):
@@ -244,82 +241,7 @@ class Order(models.Model):
         return str(self.id)
 
 
-class GameCategory(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Имя категории')
-    slug = models.SlugField(unique=True)
 
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse('game_category_detail', kwargs={'slug': self.slug})
-
-
-class GameBox(models.Model):
-    STATUS_ON_STORAGE = 'on storage'
-    STATUS_AVAILABLE = 'available'
-    STATUS_RENTED = 'rented'
-    STATUS_BOOKED = 'booked'
-    STATUS_ON_REVIEW = 'on review'
-    STATUS_BOUGHT = 'bought'
-    STATUS_SPOILT = 'spoilt'
-    STATUS_DONOR = 'donor'
-
-    STATUS_CHOICES = (
-        (STATUS_ON_STORAGE, 'Игра на складе'),
-        (STATUS_AVAILABLE, 'Игра свободна'),
-        (STATUS_RENTED, 'Игра арендована'),
-        (STATUS_BOOKED, 'Игра забронирована'),
-        (STATUS_ON_REVIEW, 'Игра на проверке'),
-        (STATUS_BOUGHT, 'Игра куплена'),
-        (STATUS_SPOILT, 'Игра испорчена'),
-        (STATUS_DONOR, 'Игра донор')
-    )
-    slug = models.SlugField(unique=True)
-    status = models.CharField(max_length=100, verbose_name='Статус экземпляра', choices=STATUS_CHOICES,
-                              default=STATUS_ON_STORAGE, blank=True)
-    game = models.ForeignKey('Game', verbose_name='Игра', on_delete=models.CASCADE, null=True)
-    bag_room = models.ForeignKey('BagRoom', verbose_name='Камера хранения', on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return "Коробка с {}".format(str(self.slug))
-
-
-class Game(models.Model):
-    game_category = models.ManyToManyField(GameCategory, related_name='related_game_category')
-    title = models.CharField(max_length=255, verbose_name='Наименование')
-    slug = models.SlugField(unique=True)
-    image = models.ImageField(verbose_name='Изображение')
-    description = models.TextField(verbose_name='Описание', null=True)
-    price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена/Залог')
-    number_players = models.CharField(max_length=255, verbose_name='Количество игроков')
-    rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Соимость аренды')
-    game_time = models.CharField(max_length=255, verbose_name='Время пратии')
-
-    game_boxes = models.ManyToManyField(GameBox, blank=True, related_name='related_game_box', verbose_name='ID Коробок')
-
-    def __str__(self):
-        return self.title
-
-    def get_model_name(self):
-        return self.__class__.__name__.lower()
-
-    def save(self, *args, **kwargs):
-        image = self.image
-        img = Image.open(image)
-        new_img = img.convert('RGB')
-        resize_new_img = new_img.resize((200, 200), Image.ANTIALIAS)
-        filestream = BytesIO()
-        resize_new_img.save(filestream, 'JPEG', quality=90)
-        filestream.seek(0)
-        name = '{}.{}'.format(*self.image.name.split('.'))
-        self.image = InMemoryUploadedFile(
-            filestream, 'ImageField', name, 'jpeg/image', sys.getsizeof(filestream), None
-        )
-        super().save(*args, **kwargs)
-
-    def get_absolute_url(self):
-        return get_product_url(self, 'product_detail')
 
 
 class GameGetProductsManager:
@@ -369,4 +291,37 @@ class Event(models.Model):
     slug = models.SlugField(unique=True)
     status = models.CharField(max_length=100, verbose_name='Тип события', choices=TYPE_CHOICES, blank=True)
     game_box = models.ForeignKey('GameBox', verbose_name='Игра', on_delete=models.CASCADE, null=True)
-   # rent = models.ForeignKey('Rent', verbose_name='Аренда', on_delete=models.CASCADE, null=True)
+    rent = models.ForeignKey('Rent', verbose_name='Аренда', on_delete=models.CASCADE, null=True)
+
+
+class Rent(models.Model):
+    STATUS_GAME_BOOKED = 'game_booked'
+    STATUS_DEPOSIT_PAY = 'deposit_pay'
+    STATUS_GAME_RENT = 'game_rent'
+    STATUS_RENT_END = 'rent_end'
+    STATUS_DEPOSIT_RETURN = 'deposit_return'
+
+    STATUS_CHOICES = (
+        (STATUS_GAME_BOOKED, 'Клиент забронировал игры'),
+        (STATUS_DEPOSIT_PAY, 'Клиент внес депозит'),
+        (STATUS_GAME_RENT, 'Клиент арендовал игры'),
+        (STATUS_RENT_END, 'клиент вернул игры'),
+        (STATUS_DEPOSIT_RETURN, 'Мы вернули депозит')
+    )
+
+    customer = models.ForeignKey(Customer, verbose_name='Покупатель', related_name='related_rent',
+                                 on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, verbose_name='Статус аренды', choices=STATUS_CHOICES,
+                              default=STATUS_GAME_BOOKED)
+    booked_time = models.DateTimeField(auto_now=True, verbose_name='Дата/время начала брони')
+    rent_time_start = models.DateTimeField(auto_now=True, verbose_name='Дата/время начала аренды')
+    rent_time_finish = models.DateTimeField(auto_now=True, verbose_name='Дата/время окончания аренды')
+
+    rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость аренды')
+    booked = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость брони')
+    deposit = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость залога')
+
+    cart = models.ForeignKey(Cart, verbose_name='Корзина', on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)

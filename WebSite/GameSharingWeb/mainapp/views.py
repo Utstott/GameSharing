@@ -1,32 +1,30 @@
 from django.shortcuts import render
 from django.views.generic import DetailView, View
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from .mixins import CategoryDetailMixin, CartMixin, ProductDetailMixin
 from django.contrib import messages
-from .forms import OrderForm
+from .forms import OrderForm, LoginForm, RegistrationForm
 from .utils import recalc_cart
 from django.db import transaction
 
 from .models import (
-    # Notebook,
-    # Smartphone,
     # Category,
-    # LatestProducts,
     Customer,
     Cart,
-    CartProduct,
+    CartGame,
     GameCategory,
     GameBox,
     GameGetProducts,
-    Game
+    Game,
+    Order
 )
 
 
 class BaseView(CartMixin, View):
 
     def get(self, request, *argc, **kwargs):
-        categories=GameCategory.objects.all()
+        categories = GameCategory.objects.all()
         products = GameGetProducts.object.get_products_for_main_page()
         context = {
             'categories': categories,
@@ -34,6 +32,7 @@ class BaseView(CartMixin, View):
             'cart': self.cart
         }
         return render(request, 'base.html', context)
+
 
 class ProductDetailView(CartMixin, ProductDetailMixin, DetailView):
 
@@ -54,6 +53,7 @@ class ProductDetailView(CartMixin, ProductDetailMixin, DetailView):
         context['categories'] = GameCategory.objects.all()
         return context
 
+
 class GameCategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
     model = GameCategory
     queryset = GameCategory.objects.all()
@@ -65,6 +65,7 @@ class GameCategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['cart'] = self.cart
         return context
+
 
 # class BaseView(CartMixin, View):
 #
@@ -120,14 +121,12 @@ class GameCategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
 class AddToCartView(CartMixin, View):
 
     def get(self, request, *argc, **kwargs):
-        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
-        content_type = ContentType.objects.get(model=ct_model)
-        product = content_type.model_class().objects.get(slug=product_slug)
-        cart_product, created = CartProduct.objects.get_or_create(
-            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
-        )
+        game_slug = kwargs.get('slug')
+        game = Game.objects.get(slug=game_slug)
+        print('User {}'.format(self.cart.owner))
+        cart_game, created = CartGame.objects.get_or_create(user=self.cart.owner, cart=self.cart, game=game)
         if created:
-            self.cart.products.add(cart_product)
+            self.cart.products.add(cart_game)
         recalc_cart(self.cart)
         messages.add_message(request, messages.INFO, "Товар успешно добавлен")
         return HttpResponseRedirect('/cart/')
@@ -136,15 +135,12 @@ class AddToCartView(CartMixin, View):
 class DeleteCartView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
-        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
-        content_type = ContentType.objects.get(model=ct_model)
-        product = content_type.model_class().objects.get(slug=product_slug)
-        cart_product = CartProduct.objects.get(
-            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
-        )
+        game_slug = kwargs.get('ct_model'), kwargs.get('slug')
+        game = Game.objects.get(slug=game_slug)
+        cart_game = CartGame.objects.get(user=self.cart.owner, cart=self.cart, game=game)
 
-        self.cart.products.remove(cart_product)
-        cart_product.delete()
+        self.cart.products.remove(cart_game)
+        cart_game.delete()
         recalc_cart(self.cart)
         messages.add_message(request, messages.INFO, "Товар успешно удален")
         return HttpResponseRedirect('/cart/')
@@ -152,15 +148,12 @@ class DeleteCartView(CartMixin, View):
 
 class ChangeQTYView(CartMixin, View):
     def post(self, request, *args, **kwargs):
-        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
-        content_type = ContentType.objects.get(model=ct_model)
-        product = content_type.model_class().objects.get(slug=product_slug)
-        cart_product = CartProduct.objects.get(
-            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
-        )
+        game_slug = kwargs.get('slug')
+        game = Game.objects.get(slug=game_slug)
+        cart_game = CartGame.objects.get(user=self.cart.owner, cart=self.cart, game=game)
         qty = int(request.POST.get('qty'))
-        cart_product.qty = qty
-        cart_product.save()
+        cart_game.qty = qty
+        cart_game.save()
         recalc_cart(self.cart)
         messages.add_message(request, messages.INFO, "Количество успешно изменено")
         return HttpResponseRedirect('/cart/')
@@ -168,7 +161,6 @@ class ChangeQTYView(CartMixin, View):
 
 class CartView(CartMixin, View):
     def get(self, request, *args, **kwargs):
-        #categories = Category.objects.get_categories_for_left_sidebar()
         categories = GameCategory.objects.all()
         context = {
             'cart': self.cart,
@@ -179,7 +171,7 @@ class CartView(CartMixin, View):
 
 class CheckOutView(CartMixin, View):
     def get(self, request, *args, **kwargs):
-        #categories = Category.objects.get_categories_for_left_sidebar()
+        # categories = Category.objects.get_categories_for_left_sidebar()
         categories = GameCategory.objects.all()
         form = OrderForm(request.POST or None)
         context = {
@@ -215,3 +207,75 @@ class MakeOrderView(CartMixin, View):
                                  "Спасибо за заказ, вам придет SMS c информацией на номер {}".format(new_order.phone))
             return HttpResponseRedirect('/')
         return HttpResponseRedirect('/check_out/')
+
+
+class LoginView(CartMixin, View):
+    def get(self, request, *args, **kwargs):
+        form = LoginForm(request.POST or None)
+        categories = GameCategory.objects.all()
+        context = {
+            'form': form,
+            'categories': categories,
+            'cart': self.cart
+        }
+        return render(request, 'login.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = LoginForm(request.POST or None)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect('/')
+        context = {'form': form, 'cart': self.cart}
+        return render(request, 'login.html', context)
+
+class RegistrationView(CartMixin, View):
+    def get(self, request, *args, **kwargs):
+        form = RegistrationForm(request.POST or None)
+        categories = GameCategory.objects.all()
+        context = {
+            'form': form,
+            'categories': categories,
+            'cart': self.cart
+        }
+        return render(request, 'registration.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = RegistrationForm(request.POST or None)
+        if form.is_valid():
+            new_user=form.save(commit=False)
+            new_user.username=form.cleaned_data['username']
+            new_user.email = form.cleaned_data['email']
+            new_user.first_name = form.cleaned_data['first_name']
+            new_user.last_name = form.cleaned_data['last_name']
+            new_user.save()
+            new_user.set_password (form.cleaned_data['password'])
+            new_user.save()
+            Customer.objects.create(
+                user=new_user,
+                phone=form.cleaned_data['phone'],
+                address = form.cleaned_data['address']
+            )
+            # user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+            user=form.save()
+            login(request, user)
+            return HttpResponseRedirect('/')
+        context = {'form': form, 'cart': self.cart}
+        return render(request, 'registration.html', context)
+
+class ProfileView(CartMixin, View):
+
+    def get (self, request, *args, **kwargs):
+        customer=Customer.objects.get(user=request.user)
+        orders=Order.objects.filter(customer=customer).order_by('-created_at')
+        categories=GameCategory.objects.all()
+        context={'orders': orders, 'cart':self.cart, 'categories':categories}
+        return render(
+            request,
+            'profile.html',
+            context
+        )
